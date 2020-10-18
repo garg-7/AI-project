@@ -1,0 +1,17 @@
+algorithms to cover: 
+Deterministic Hill Climbing
+1. Hill Climbing (Steepest version)
+2. Hill Climbing (First-choice) --- NOT DETERMINISTIC
+3. Tabu Search 
+4. Enforced Hill Climbing (MAYBE)  ---- NOPE
+
+Stochastic Hill Cimbing Techniques 
+5. Hill climbing with random walk ---- NOPE
+6. Hill climbing with random restarts 
+7. Combination of 5 & 6 (MAYBE) ---- NOPE
+8. Simulated Annealing (PREFERRED instead of 7)
+
+Final improvement
+9. Local Beam Search
+10. Stochastic Local Beam Search
+11. Genetic Algorithms
