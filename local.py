@@ -5,12 +5,13 @@
         problem.getNeighbours()
         problem.getRandomNeighbour()
         problem.isBetter()
+        problem.getRandomState()
 """
 
 
 # ------- Deterministic Algorithms ------- #
 
-def hillClimbingSearch_S(problem, state):
+def hillClimbingSearch_S(problem):
     """
         `'Steepest Direction Hill Climbing'`
 
@@ -27,7 +28,9 @@ def hillClimbingSearch_S(problem, state):
             The state returned after Steepest Hill Climbing
     """
 
-    currentState = state
+    currentState = problem.state
+    problem.visualize(currentState)
+    steps=0
     while True:
         neighbours = problem.getNeighbours(currentState)
         runningBest = currentState
@@ -36,15 +39,18 @@ def hillClimbingSearch_S(problem, state):
             runningBestVal = problem.getObjValue(runningBest)
             if problem.isBetter(nObjVal, runningBestVal):
                 runningBest = n
+                steps+=1
+                
         if runningBest is currentState:
             # no neighbour is better, optimum reached
-            return currentState
+            return steps, currentState
         else:
             # jump to best neighbour
             currentState = runningBest
+            input("Enter to Continue")
+            problem.visualize(currentState)
 
-
-def tabuSearch(problem, state, tabuSize=32, maxSteps=-1):
+def tabuSearch(problem, tabuSize=32, maxSteps=-1):
     """
         `'Tabu Search'`
 
@@ -65,11 +71,12 @@ def tabuSearch(problem, state, tabuSize=32, maxSteps=-1):
             The state returned after Tabu Search
     """
 
-    currentState = state
+    currentState = problem.state
+    problem.visualize(currentState)
     tabuList = list()
-    tabuList.add(currentState)
+    tabuList.append(currentState)
     steps = 0
-    while maxSteps = -1 or steps<maxSteps:
+    while maxSteps == -1 or steps<maxSteps:
         runningBest = currentState
         neighbours = problem.getNeighbours(currentState)
         for n in neighbours:
@@ -79,21 +86,23 @@ def tabuSearch(problem, state, tabuSize=32, maxSteps=-1):
                 problem.isBetter(nObjVal, runningBestVal):
                 runningBest = n
         
-        if bestNeighbour:
-            tabuList.append(bestNeighbour)
+        if runningBest!=currentState:
+            tabuList.append(runningBest)
             if len(tabuList) > tabuSize:
                 tabuList.pop(0)
-            currentState = bestNeighbour
+            currentState = runningBest
+            input("Enter to Continue")
             steps+=1
+            problem.visualize(currentState)
         else:
-            print(f"{steps} completed. Nowhere else to go.")
-            return currentState
-    return currentState
+            # print(f"{steps} completed. Nowhere else to go.")
+            return steps, currentState
+    return steps, currentState
 
 
 # ------- Stochastic Algorithms ------- #
 
-def hillClimbingSearch_FC(problem, state, maxTrials=100):
+def hillClimbingSearch_FC(problem, maxTrials=100):
     """
         `'First-Choice Hill Climbing'`
 
@@ -112,7 +121,10 @@ def hillClimbingSearch_FC(problem, state, maxTrials=100):
             The state returned after First-Choice Hill Climbing
     """
 
-    currentState = state
+
+    currentState = problem.state
+    problem.visualize(currentState)
+    steps = 0
     while True:
         currentObjVal = problem.getObjValue(currentState)
         trials = 0
@@ -127,13 +139,16 @@ def hillClimbingSearch_FC(problem, state, maxTrials=100):
         if betterState:
             # jump to neighbour better than current state
             currentState = betterState
+            input("Enter to Continue")
+            steps+=1
+            problem.visualize(currentState)
         else:
             # trials exhausted, no better neighbour found
-            print(f"Even after {maxTrials} trials too, couldn't find a better neighbour for {problem.getInfo(currentState)} ")
-            return currentState
+            # print(f"Even after {maxTrials} trials, couldn't find a better neighbour. ")
+            return steps, currentState
 
 
-def hillClimbingStep_RR(problem, state, p=0.1, maxSteps=10_000):
+def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
     """
         `'Random-Restart Hill Climbing'`
 
@@ -155,7 +170,8 @@ def hillClimbingStep_RR(problem, state, p=0.1, maxSteps=10_000):
     """
 
     import random
-    currentState = state
+    currentState = problem.state
+    problem.visualize(currentState)
     steps = 0
     bestYet = currentState
     while steps<maxSteps:
@@ -178,14 +194,20 @@ def hillClimbingStep_RR(problem, state, p=0.1, maxSteps=10_000):
             else:
                 # jump to best neighbour
                 currentState = runningBest
+                # input("Enter to Continue")
+                steps+=1
+                problem.visualize(currentState)
         else:
             # do a random restart
             currentState = problem.getRandomState()
+            print("Random Restart Done. Current State - ")
+            problem.visualize(currentState)
+        steps+=1
     # after running out of steps, return the best yet state
-    return bestYet
+    return steps, bestYet
 
 
-def simulatedAnnealing(problem, state, schedule):
+def simulatedAnnealing(problem, schedule):
     """
         `'Random-Restart Hill Climbing'`
 
@@ -207,10 +229,10 @@ def simulatedAnnealing(problem, state, schedule):
     import random
     from math import exp
     
-    currentState = state
+    currentState = problem.state
     for i in range(len(schedule)):
         temperature = schedule[i]
-        if temperature = 0:
+        if temperature == 0:
             return currentState
         neighbour = problem.getRandomNeighbour(currentState)
         changeInObj = problem.getObjValue(neighbour) - \
@@ -224,6 +246,74 @@ def simulatedAnnealing(problem, state, schedule):
                 currentState = neighbour
     return currentState
 
-def geneticAlgorithm(problem, state):
-    #TODO
-    pass
+
+
+
+#--------------Continuous Worlds----------------#
+import math
+
+def gradDescent(problem, maxIterations=20_000, stepSize=0.1):
+
+    currentWeights = problem.weights
+    loss = problem.getObjValue(currentWeights)
+    bestLoss = loss
+    # for visualization
+    problem.losses.append(loss)
+    lossSchedule = []
+    lossSchedule.append(loss)
+    i=0
+    print(f"Iter:[{i}/{maxIterations}]\tLoss: {problem.getObjValue(currentWeights)} StepSize was {stepSize}")    
+    while i < maxIterations:
+        derivatives = problem.getDerivatives(currentWeights)
+        currentWeights = problem.updateWeights(currentWeights, derivatives, stepSize)
+        i+=1
+        loss = problem.getObjValue(currentWeights)
+        lossSchedule.append(loss)
+        problem.losses.append(loss)
+        if loss < bestLoss:
+            bestWeights = currentWeights
+            bestLoss = loss
+        if len(lossSchedule)>5:
+            lossSchedule.pop(0)
+        if lossSchedule[-1] > lossSchedule[-2]:
+            stepSize /= 10
+        # if len(lossSchedule)==5:
+        #     if abs(lossSchedule[0] - lossSchedule[4]) < 2:
+        #         stepSize = math.fsum([stepSize, 0.002])
+        
+        # if i%100==0:
+        #     stepSize /= 
+        print(f"Iter:[{i}/{maxIterations}]\tLoss: {loss}  StepSize was {stepSize}")
+
+
+    return bestWeights
+
+# def stochasticLocalBeamSearch(problem, k=10):
+#     initStates = set()
+#     while len(initStates) < 10:
+#         while True:
+#             genState = problem.getRandomState()
+#             if genState in initStates:
+#                 continue
+#             else:
+#                 initStates.add(genState)
+#                 break
+#     for state in initStates:
+#         neighbours = 
+
+# def geneticAlgorithm(population, state, p=0.01):
+#     import random
+#     while Time is left or We get a superfit person:
+#         new_population = set()
+#         weights = [problem.getObjValue(element) for element in population]
+#         for i in range(len(population)):
+#             x = random.choice(population, weights=weights)
+#             y = random.choice(population, weights=weights)
+#             offSpring = Reproduce(x, y)
+#             # if random.random() < p:
+#             #     offSpring = Mutate(offSpring)
+#             new_population.add(offSpring)
+#         population.append(list(new_population))
+    
+#     # return the best in the current population
+#     for element in population:
