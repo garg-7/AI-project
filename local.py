@@ -176,7 +176,7 @@ def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
     bestYet = currentState
     while steps<maxSteps:
         currentObjVal = problem.getObjValue(currentState)
-        if random.random()>p:
+        if random.random()>=p:
             # make a greedy step
             neighbours = problem.getNeighbours(currentState)
             runningBest = currentState
@@ -209,7 +209,7 @@ def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
 
 def simulatedAnnealing(problem, schedule):
     """
-        `'Random-Restart Hill Climbing'`
+        `'Simulated Annealing'`
 
         Inputs
         ------ 
@@ -252,7 +252,7 @@ def simulatedAnnealing(problem, schedule):
 #--------------Continuous Worlds----------------#
 import math
 
-def gradDescent(problem, maxIterations=20_000, stepSize=0.1):
+def gradDescent(problem, maxIterations=5000, stepSize=0.1):
 
     currentWeights = problem.weights
     loss = problem.getObjValue(currentWeights)
