@@ -32,6 +32,8 @@ def hillClimbingSearch_S(problem):
     problem.visualize(currentState)
     steps=0
     while True:
+        if problem.isGlobalOptimum(currentState):
+            return steps, currentState
         neighbours = problem.getNeighbours(currentState)
         runningBest = currentState
         for n in neighbours:
@@ -39,15 +41,15 @@ def hillClimbingSearch_S(problem):
             runningBestVal = problem.getObjValue(runningBest)
             if problem.isBetter(nObjVal, runningBestVal):
                 runningBest = n
-                steps+=1
-                
+
         if runningBest is currentState:
             # no neighbour is better, optimum reached
             return steps, currentState
         else:
             # jump to best neighbour
             currentState = runningBest
-            input("Enter to Continue")
+            input("Press enter to continue ")
+            steps+=1
             problem.visualize(currentState)
 
 def tabuSearch(problem, tabuSize=32, maxSteps=-1):
@@ -78,6 +80,8 @@ def tabuSearch(problem, tabuSize=32, maxSteps=-1):
     steps = 0
     while maxSteps == -1 or steps<maxSteps:
         runningBest = currentState
+        if problem.isGlobalOptimum(currentState):
+            return steps, currentState
         neighbours = problem.getNeighbours(currentState)
         for n in neighbours:
             runningBestVal = problem.getObjValue(runningBest)
@@ -87,15 +91,21 @@ def tabuSearch(problem, tabuSize=32, maxSteps=-1):
                 runningBest = n
         
         if runningBest!=currentState:
+            # better neighbour found
+
+            # add it to the tabu list
             tabuList.append(runningBest)
             if len(tabuList) > tabuSize:
+                # if tabu list size exceeds, pop the oldest element
                 tabuList.pop(0)
+            
+            # make the jump to the better neighbour
             currentState = runningBest
-            input("Enter to Continue")
+            input("Press enter to continue ")
             steps+=1
             problem.visualize(currentState)
         else:
-            # print(f"{steps} completed. Nowhere else to go.")
+            # no better neighbour
             return steps, currentState
     return steps, currentState
 
@@ -127,6 +137,8 @@ def hillClimbingSearch_FC(problem, maxTrials=100):
     steps = 0
     while True:
         currentObjVal = problem.getObjValue(currentState)
+        if problem.isGlobalOptimum(currentState):
+            return steps, currentState
         trials = 0
         betterState = None
         while trials < maxTrials:
@@ -139,12 +151,11 @@ def hillClimbingSearch_FC(problem, maxTrials=100):
         if betterState:
             # jump to neighbour better than current state
             currentState = betterState
-            input("Enter to Continue")
+            input("Press enter to continue ")
             steps+=1
             problem.visualize(currentState)
         else:
-            # trials exhausted, no better neighbour found
-            # print(f"Even after {maxTrials} trials, couldn't find a better neighbour. ")
+            print(f"{maxTrials} trials for random neighbours exhausted. No better neighbour found.")
             return steps, currentState
 
 
@@ -173,9 +184,13 @@ def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
     currentState = problem.state
     problem.visualize(currentState)
     steps = 0
+    restarts=0
     bestYet = currentState
     while steps<maxSteps:
         currentObjVal = problem.getObjValue(currentState)
+        if problem.isGlobalOptimum(currentState):
+            print(f"\nTotal random restarts done: {restarts}.")
+            return steps, currentState
         if random.random()>=p:
             # make a greedy step
             neighbours = problem.getNeighbours(currentState)
@@ -194,16 +209,20 @@ def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
             else:
                 # jump to best neighbour
                 currentState = runningBest
-                # input("Enter to Continue")
-                steps+=1
+                input("Press enter to continue ")
+                print("Greedy step taken.")
                 problem.visualize(currentState)
+                steps+=1
         else:
             # do a random restart
             currentState = problem.getRandomState()
-            print("Random Restart Done. Current State - ")
+            input("Press enter to continue ")
+            print("Random restart done.")
             problem.visualize(currentState)
-        steps+=1
+            restarts+=1
+            steps+=1
     # after running out of steps, return the best yet state
+    print(f"\nTotal random restarts done: {restarts}.")
     return steps, bestYet
 
 

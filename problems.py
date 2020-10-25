@@ -57,6 +57,10 @@ class nQueensProblem:
         # Lower i.e. less number of attacking queens
         return val1<val2
     
+    def isGlobalOptimum(self, state):
+        val = self.getObjValue(state)
+        return val==0
+
     def visualize(self, state):
         # import tkinter as tk
         # window = tk.Tk()
@@ -77,6 +81,7 @@ class nQueensProblem:
         
         # window.mainloop()
         
+        print()
 
         for i in range(self.n):
             for j in range(self.n):
