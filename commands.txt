@@ -1,0 +1,5 @@
+python main.py -d discrete -q 4 -da HC_RR
+python main.py -d discrete -q 6 -i [1,2,3,2,1,6] -da HC_FC -qt
+python main.py -d discrete -da TS -qt
+
+python main.py -d continuous -f listings.txt -itr 5000 -ss 0.01
