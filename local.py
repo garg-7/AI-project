@@ -11,7 +11,7 @@
 
 # ------- Deterministic Algorithms ------- #
 
-def hillClimbingSearch_S(problem):
+def hillClimbingSearch_S(problem, userInteraction):
     """
         `'Steepest Direction Hill Climbing'`
 
@@ -19,8 +19,6 @@ def hillClimbingSearch_S(problem):
         -------
         `problem`
             A problem class with required functions
-        `state`
-            The state at which the problem is right now
         
         Output:
         -------
@@ -30,6 +28,10 @@ def hillClimbingSearch_S(problem):
 
     currentState = problem.state
     problem.visualize(currentState)
+
+    # for visualization
+    problem.hVals.append(problem.getObjValue(currentState))
+    
     steps=0
     while True:
         if problem.isGlobalOptimum(currentState):
@@ -48,11 +50,16 @@ def hillClimbingSearch_S(problem):
         else:
             # jump to best neighbour
             currentState = runningBest
-            input("Press enter to continue ")
+
+            # for visualization later on
+            problem.hVals.append(problem.getObjValue(currentState))
+            
+            if userInteraction:
+                input("Press enter to continue ")
             steps+=1
             problem.visualize(currentState)
 
-def tabuSearch(problem, tabuSize=32, maxSteps=-1):
+def tabuSearch(problem, tabuSize, maxSteps, userInteraction):
     """
         `'Tabu Search'`
 
@@ -60,8 +67,6 @@ def tabuSearch(problem, tabuSize=32, maxSteps=-1):
         -------
         `problem`
             A problem class with required functions
-        `state`
-            The state at which the problem is right now
         `tabuSize` (optional)
             Number of elements to be remembered in the Tabu Tenure
         `maxSteps` (optional)
@@ -78,6 +83,10 @@ def tabuSearch(problem, tabuSize=32, maxSteps=-1):
     tabuList = list()
     tabuList.append(currentState)
     steps = 0
+
+    # for visualization
+    problem.hVals.append(problem.getObjValue(currentState))
+
     while maxSteps == -1 or steps<maxSteps:
         runningBest = currentState
         if problem.isGlobalOptimum(currentState):
@@ -101,7 +110,12 @@ def tabuSearch(problem, tabuSize=32, maxSteps=-1):
             
             # make the jump to the better neighbour
             currentState = runningBest
-            input("Press enter to continue ")
+            
+            # for visualization later on
+            problem.hVals.append(problem.getObjValue(currentState))
+            
+            if userInteraction:
+                input("Press enter to continue ")
             steps+=1
             problem.visualize(currentState)
         else:
@@ -112,7 +126,7 @@ def tabuSearch(problem, tabuSize=32, maxSteps=-1):
 
 # ------- Stochastic Algorithms ------- #
 
-def hillClimbingSearch_FC(problem, maxTrials=100):
+def hillClimbingSearch_FC(problem, maxTrials, userInteraction):
     """
         `'First-Choice Hill Climbing'`
 
@@ -120,8 +134,6 @@ def hillClimbingSearch_FC(problem, maxTrials=100):
         ------ 
         `problem`
             A problem class with required functions
-        `state`
-            The state at which the problem is right now
         `maxTrials` (optional)
             Number of random neighbours to try before giving up.
         
@@ -135,6 +147,10 @@ def hillClimbingSearch_FC(problem, maxTrials=100):
     currentState = problem.state
     problem.visualize(currentState)
     steps = 0
+
+    # for visualization
+    problem.hVals.append(problem.getObjValue(currentState))
+    
     while True:
         currentObjVal = problem.getObjValue(currentState)
         if problem.isGlobalOptimum(currentState):
@@ -148,10 +164,15 @@ def hillClimbingSearch_FC(problem, maxTrials=100):
                 betterState = neighbour
                 break
             trials+=1
-        if betterState:
+        if betterState:            
+            if userInteraction:
+                input("Press enter to continue ")
             # jump to neighbour better than current state
             currentState = betterState
-            input("Press enter to continue ")
+            
+            # for visualization later on
+            problem.hVals.append(problem.getObjValue(currentState))
+            
             steps+=1
             problem.visualize(currentState)
         else:
@@ -159,7 +180,7 @@ def hillClimbingSearch_FC(problem, maxTrials=100):
             return steps, currentState
 
 
-def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
+def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
     """
         `'Random-Restart Hill Climbing'`
 
@@ -167,8 +188,6 @@ def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
         ------ 
         `problem`
             A problem class with required functions
-        `state`
-            The state at which the problem is right now
         `p` (optional)
             The probability of random restart
         `maxSteps` (optional)
@@ -186,6 +205,10 @@ def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
     steps = 0
     restarts=0
     bestYet = currentState
+
+    # for visualization
+    problem.hVals.append(problem.getObjValue(currentState))
+
     while steps<maxSteps:
         currentObjVal = problem.getObjValue(currentState)
         if problem.isGlobalOptimum(currentState):
@@ -208,25 +231,41 @@ def hillClimbingSearch_RR(problem, p=0.1, maxSteps=10_000):
                     bestYet = runningBest
             else:
                 # jump to best neighbour
+                if userInteraction:
+                    input("Press enter to continue ")
                 currentState = runningBest
-                input("Press enter to continue ")
+
+                # for visualization later on
+                problem.hVals.append(problem.getObjValue(currentState))
+                
                 print("Greedy step taken.")
                 problem.visualize(currentState)
                 steps+=1
         else:
             # do a random restart
+            if userInteraction:
+                input("Press enter to continue ")
             currentState = problem.getRandomState()
-            input("Press enter to continue ")
+            
+            # for visualization later on
+            problem.hVals.append(problem.getObjValue(currentState))
+            
             print("Random restart done.")
             problem.visualize(currentState)
             restarts+=1
             steps+=1
     # after running out of steps, return the best yet state
-    print(f"\nTotal random restarts done: {restarts}.")
+    print(f"\n[INFO] Total number of random restarts done: {restarts}.")
     return steps, bestYet
 
+def tempSchedule(steps, maxSteps):
+    ''' Returns the temperature depending on how many steps have been taken'''
+    temperature = 100*min(1, 1 - float(steps)/maxSteps)
 
-def simulatedAnnealing(problem, schedule):
+    return temperature
+
+
+def simulatedAnnealing(problem, maxSteps, userInteraction):
     """
         `'Simulated Annealing'`
 
@@ -234,23 +273,26 @@ def simulatedAnnealing(problem, schedule):
         ------ 
         `problem`
             A problem class with required functions
-        `state`
-            The state at which the problem is right now
-        `schedule`
-            The schedule according to which temperature varies.
+        `maxSteps`
+            The number of steps according to which the temperature schedule is created.
         
         Output
         ------
         `state`
             The state returned after Simulated Annealing
     """
-    
+
     import random
     from math import exp
-    
+
     currentState = problem.state
-    for i in range(len(schedule)):
-        temperature = schedule[i]
+    steps = 0
+
+    # for visualization
+    problem.hVals.append(problem.getObjValue(currentState))
+
+    while steps<maxSteps:
+        temperature = tempSchedule(steps, maxSteps)
         if temperature == 0:
             return currentState
         neighbour = problem.getRandomNeighbour(currentState)
@@ -258,54 +300,102 @@ def simulatedAnnealing(problem, schedule):
                         problem.getObjValue(currentState)
         if changeInObj > 0:
             # if the neighbour is better, jump
+            if userInteraction:
+                input("Press enter to continue ")
             currentState = neighbour
+            steps+=1
+
+            # for visualization later on
+            problem.hVals.append(problem.getObjValue(currentState))
+
         else:
             # if the neighbour is worse, jump with some probability
             if exp(changeInObj/temperature) >= random.random():
+                if userInteraction:
+                    input("Press enter to continue ")
                 currentState = neighbour
+                steps+=1
+
+                # for visualization later on
+                problem.hVals.append(problem.getObjValue(currentState))
     return currentState
 
 
 
 
-#--------------Continuous Worlds----------------#
+#--------------Continuous Domain----------------#
 import math
 
-def gradDescent(problem, maxIterations=5000, stepSize=0.1):
+def gradDescent(problem, maxIterations, stepSize):
+    '''
+        `'Batch Gradient Descent'`
 
+        Inputs
+        ------ 
+        `problem`
+            A problem class with required functions
+        `maxIterations`
+            The number of iterations to run gradient descent for
+        `stepSize`
+            The stepSize factor to begin gradient descent with
+        
+        Output
+        ------
+        `bestWeights`
+            The optimized weights obtained using gradient descent
+
+    '''
     currentWeights = problem.weights
     loss = problem.getObjValue(currentWeights)
     bestLoss = loss
+    
     # for visualization
     problem.losses.append(loss)
+    
+    # mantain a list of last five loss values to be able to modify
+    # the stepSize if descent is going very slowly or very quickly
     lossSchedule = []
     lossSchedule.append(loss)
+    
     i=0
-    print(f"Iter:[{i}/{maxIterations}]\tLoss: {problem.getObjValue(currentWeights)} StepSize was {stepSize}")    
+    print(f"Iter:[{i}/{maxIterations}]\tLoss: {problem.getObjValue(currentWeights)}")    
     while i < maxIterations:
+
+        # get partial derivatives of the loss w.r.t. the weights
         derivatives = problem.getDerivatives(currentWeights)
+
+        # update the values of the weights
         currentWeights = problem.updateWeights(currentWeights, derivatives, stepSize)
+        
         i+=1
         loss = problem.getObjValue(currentWeights)
         lossSchedule.append(loss)
+        
+        # for visualization
         problem.losses.append(loss)
+        
         if loss < bestLoss:
+            # if the loss is the lowest yet
             bestWeights = currentWeights
             bestLoss = loss
-        if len(lossSchedule)>5:
-            lossSchedule.pop(0)
-        if lossSchedule[-1] > lossSchedule[-2]:
-            stepSize /= 10
-        # if len(lossSchedule)==5:
-        #     if abs(lossSchedule[0] - lossSchedule[4]) < 2:
-        #         stepSize = math.fsum([stepSize, 0.002])
         
-        # if i%100==0:
-        #     stepSize /= 
-        print(f"Iter:[{i}/{maxIterations}]\tLoss: {loss}  StepSize was {stepSize}")
+        if len(lossSchedule)>5:
+            # if size of loss schedule exceeds 5, remove the oldest loss value
+            lossSchedule.pop(0)
+        
+        if lossSchedule[-1] > lossSchedule[-2]:
+            # if the loss is increasing reduce the step size factor by 10
+            stepSize /= 10
+            print("Step size factor was reduced to 1/10th")
 
+        print(f"Iter:[{i}/{maxIterations}]\tLoss: {loss}")
 
     return bestWeights
+
+
+# ---------------- END for now --------------------- #
+
+# TODO: add the functions below
 
 # def stochasticLocalBeamSearch(problem, k=10):
 #     initStates = set()
@@ -336,3 +426,6 @@ def gradDescent(problem, maxIterations=5000, stepSize=0.1):
     
 #     # return the best in the current population
 #     for element in population:
+
+
+# def stochasticGradientDescent(problem, ):

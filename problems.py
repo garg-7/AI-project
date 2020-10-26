@@ -14,6 +14,9 @@ class nQueensProblem:
             self.state = colArrangement
         else:
             self.state = self.getRandomState()
+        
+        # for visualization
+        self.hVals = []
 
     def getNeighbours(self, state):
         neighbours = []
@@ -96,6 +99,15 @@ class nQueensProblem:
 
         print()
         return
+    
+    def visualizeLandscape(self):
+        plt.plot(list(range(len(self.hVals))), self.hVals)
+        plt.grid()
+        plt.xlabel("Step number")
+        plt.ylabel("Objective function value")
+        print("Close the plot window to continue")
+        plt.show()
+
 
 
 class propertyProblem:
@@ -157,8 +169,6 @@ class propertyProblem:
         plt.show()
     
     def visualizeLoss(self):
-        for i in range(100):
-            print(self.losses[-1-i])
         # plt.scatter(list(range(len(self.losses)))[100:], self.losses[100:])
         plt.plot(list(range(len(self.losses)))[100:], self.losses[100:])
         plt.grid()
