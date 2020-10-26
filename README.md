@@ -4,7 +4,7 @@
 ## About the project:
 This project is about local search algorithms like various variants of **Hill Climbing**, **Simulated Annealing**, **Gradient Descent** etc. The implementations have been done in a general manner and hence can be employed for **any kind of generalized problem** that can provide the required functions. Also, two exempler problems, one in the discrete domain - N-Queens and one in the continuous domain - Real Estate Price prediction (by Gradient descent) have been included.
 
-## Environment:
+## Dependencies:
 The only dependencies are matplotlib and numpy for plotting results. You could install these via pip:  
 `python -m pip install matplotlib`  
 `python -m pip install numpy`
@@ -86,7 +86,7 @@ _This will run simulated annealing. The max number of steps taken if optimum isn
 NOTE: The schedule that has been considered here, is:  
 ``temperature = 100*min(1, 1-stepsDone/maxSteps)``
 ## Part B - Continuous Domain:
-For the sake of completeness, one local search algorithm for problems in the continuous domain has been added i.e. Batch Gradient Descent.  
+For the sake of completeness, one local search algorithm for problems in the continuous domain has been added which is Batch Gradient Descent.  
 _(The exemplar problem here is that of real estate price prediction based on a given trend.)_  
   
 To run the algorithm(s) for continuous domain, pass `continuous` as the domain argument as follows:
@@ -104,9 +104,19 @@ A deterministic algorithm.
 ```bash
 python main.py -d continuous -ca BGD -f houses.txt -ss 0.5 -itr 1000
 ```  
-_This will run batch gradient descent. The known information will be taken from the file `houses.txt`. Descent will begin with a step size of 0.5 and will run for 1000 iterations._  
+_This will run batch gradient descent. Data points given will be taken from the file `houses.txt`. Descent will begin with a step size of 0.5 and will run for 1000 iterations._  
+NOTE: Here, we are basically trying to fit a line over the data points given. Optimization is happening w.r.t. the paramters of the line i.e. slope and intercept. The greedy step being taken is in the direction specified by the partial derivatives.
 
+### NOTE:
+Don't sweat over rememebering the above flags. You could get what these mean by simply passing the `--help` (or `-h`) flag:  
+```bash
+python main.py -h
+```   
 ## Further Extensions:
-
+- Further, more exemplar problems for constraint satisfaction in the discrete case and for value prediction in the continuous case are to be added.  
+- Other discrete algorithms that can be looked into: Genetic Algorithms, Local Beam Search variants.
+- Other continuous algorithms that can be looked into: variants of gradient descent like Stochastic Gradient Descent. 
 
 ## References:
+- This project is based on local search algorithms as discussed in `Artifical Intelligence - A Modern Approach (3rd Ed.) by Russell and Norvig`.
+- Help has been taken from wikipedia pages of the above search algorithms.
