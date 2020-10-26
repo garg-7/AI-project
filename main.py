@@ -32,7 +32,7 @@ optional.add_argument("-tt", "--tabuTenure",
                     type=int,
                     default=32)
 optional.add_argument("-s", "--maxSteps",
-                    help="[TS] [HC_RR] [SA] Maximum number of steps to take. Default: TS - Till optimum; HC_RR/SA - 10,000",
+                    help="[TS] [HC_RR] [SA] Maximum number of steps to take. Default: TS - Till optimum; HC_RR/SA - 1000",
                     type=int)
 optional.add_argument("-mt", "--maxTrials",
                     help="[HC_FC] Max number of random neighbours to try before declaring optimum. Default: 100",
