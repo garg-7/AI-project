@@ -369,7 +369,7 @@ def simulatedAnnealing(problem, maxSteps, userInteraction, beQuiet):
 #--------------Continuous Domain----------------#
 import math
 
-def gradDescent(problem, maxIterations, stepSize):
+def gradDescent(problem, maxIterations, stepSize, beQuiet):
     '''
         `'Batch Gradient Descent'`
 
@@ -401,7 +401,8 @@ def gradDescent(problem, maxIterations, stepSize):
     lossSchedule.append(loss)
     
     i=0
-    print(f"Iter:[{i}/{maxIterations}]\tLoss: {problem.getObjValue(currentWeights)}")    
+    if not beQuiet:
+        print(f"Iter:[{i}/{maxIterations}]\tLoss: {problem.getObjValue(currentWeights)}")    
     while i < maxIterations:
 
         # get partial derivatives of the loss w.r.t. the weights
@@ -429,11 +430,12 @@ def gradDescent(problem, maxIterations, stepSize):
         if lossSchedule[-1] > lossSchedule[-2]:
             # if the loss is increasing reduce the step size factor by 10
             stepSize /= 10
-            print("Step size factor was reduced to 1/10th")
+            if not beQuiet:
+                print("Step size factor was reduced to 1/10th")
+        if not beQuiet:
+            print(f"Iter:[{i}/{maxIterations}]\t\tLoss: {loss}")
 
-        print(f"Iter:[{i}/{maxIterations}]\t\tLoss: {loss}")
-
-    return bestWeights
+    return bestWeights, bestLoss
 
 
 # ---------------- END for now --------------------- #

@@ -187,9 +187,11 @@ def main():
         problem = propertyProblem(priceList)
         print("[INFO] Algorithm to run: Gradient Descent")
         print(f"[START] Running the algorithm for Property Price Prediction Problem")
-        optimizedWeights = gradDescent(problem, 
+        optimizedWeights, bestLoss = gradDescent(problem, 
                                         maxIterations=args.maxIterations,
-                                        stepSize=args.stepSize)
+                                        stepSize=args.stepSize, 
+                                        beQuiet=args.quiet)
+        print(f"[END] Completed descent for {args.maxIterations} iterations. Best loss: {bestLoss}")
         print("[PLOT] Plotting the result, post optimization along with loss values...")
         problem.visualize(optimizedWeights)
         # print("[PLOT] Plotting the loss values...")
