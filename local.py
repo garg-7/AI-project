@@ -83,44 +83,48 @@ def tabuSearch(problem, tabuSize, maxSteps, userInteraction):
     tabuList = list()
     tabuList.append(currentState)
     steps = 0
-
+    bestYet = None
     # for visualization
     problem.hVals.append(problem.getObjValue(currentState))
 
     while maxSteps == -1 or steps<maxSteps:
-        runningBest = currentState
         if problem.isGlobalOptimum(currentState):
             return steps, currentState
         neighbours = problem.getNeighbours(currentState)
+
+        i=0
+        runningBest = neighbours[0]
+        while runningBest in tabuList:
+            i+=1
+            if i==len(neighbours):
+                return steps, currentState
+            runningBest = neighbours[i]
+
+        # reaching this point means there is atleast 
+        # one neighbour that isn't in the tabuList
         for n in neighbours:
             runningBestVal = problem.getObjValue(runningBest)
             nObjVal = problem.getObjValue(n)
             if n not in tabuList and \
                 problem.isBetter(nObjVal, runningBestVal):
                 runningBest = n
-        
-        if runningBest!=currentState:
-            # better neighbour found
 
-            # add it to the tabu list
-            tabuList.append(runningBest)
-            if len(tabuList) > tabuSize:
-                # if tabu list size exceeds, pop the oldest element
-                tabuList.pop(0)
-            
-            # make the jump to the better neighbour
-            currentState = runningBest
-            
-            # for visualization later on
-            problem.hVals.append(problem.getObjValue(currentState))
-            
-            if userInteraction:
-                input("Press enter to continue ")
-            steps+=1
-            problem.visualize(currentState)
-        else:
-            # no better neighbour
-            return steps, currentState
+        # add it to the tabu list
+        tabuList.append(runningBest)
+        if len(tabuList) > tabuSize:
+            # if tabu list size exceeds, pop the oldest element
+            tabuList.pop(0)
+        
+        # make the jump to the better neighbour
+        currentState = runningBest
+        
+        # for visualization later on
+        problem.hVals.append(problem.getObjValue(currentState))
+        
+        if userInteraction:
+            input("Press enter to continue ")
+        steps+=1
+        problem.visualize(currentState)
     return steps, currentState
 
 
