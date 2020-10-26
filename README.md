@@ -108,15 +108,16 @@ _This will run batch gradient descent. Data points given will be taken from the 
 NOTE: Here, we are basically trying to fit a line over the data points given. Optimization is happening w.r.t. the paramters of the line i.e. slope and intercept. The greedy step being taken is in the direction specified by the partial derivatives.
 
 ### NOTE:
-Don't sweat over rememebering the above flags. You could get what these mean by simply passing the `--help` (or `-h`) flag:  
+Don't sweat over rememebering the above flags. You could get what these mean by simply passing the `--help`/`-h` flag:  
 ```bash
 python main.py -h
 ```   
 ## Further Extensions:
-- Further, more exemplar problems for constraint satisfaction in the discrete case and for value prediction in the continuous case are to be added.  
+- More exemplar problems for constraint satisfaction in the discrete case and for value prediction in the continuous case to be looked into.  
 - Other discrete algorithms that can be looked into: Genetic Algorithms, Local Beam Search variants.
 - Other continuous algorithms that can be looked into: variants of gradient descent like Stochastic Gradient Descent. 
 
 ## References:
 - This project is based on local search algorithms as discussed in `Artifical Intelligence - A Modern Approach (3rd Ed.) by Russell and Norvig`.
 - Help has been taken from wikipedia pages of the above search algorithms.
+- Last but not the least, countless StackOverFlow pages.
