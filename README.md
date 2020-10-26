@@ -108,7 +108,7 @@ _This will run batch gradient descent. Data points given will be taken from the 
 NOTE: Here, we are basically trying to fit a line over the data points given. Optimization is happening w.r.t. the paramters of the line i.e. slope and intercept. The greedy step being taken is in the direction specified by the partial derivatives.
 
 ### NOTE:
-Don't sweat over rememebering the above flags. You could get what these mean by simply passing the `--help`/`-h` flag:  
+Don't sweat over remembering the above flags. You could get what these mean by simply passing the `--help`/`-h` flag:  
 ```bash
 python main.py -h
 ```   
