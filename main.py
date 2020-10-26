@@ -27,6 +27,9 @@ optional.add_argument("-ca", "--cAlgo",
 optional.add_argument("-u", "--userInteraction",
                     help="Keep the search interactive",
                     action='store_true')
+optional.add_argument("-qt", "--quiet",
+                    help="No intermediate visualizations. Only show results.",
+                    action='store_true')
 optional.add_argument("-tt", "--tabuTenure",
                     help="[TS] Size of Tabu Tenure. Default: 32",
                     type=int,
@@ -89,11 +92,15 @@ def main():
         if args.dAlgo=='HC_S':
             print("[INFO] Steepest Hill Climbing Chosen")
             print(f"[START] Running the algorithm for {args.queens}-Queens Problem")
-            steps, problem.state = hillClimbingSearch_S(problem, args.userInteraction)
+            steps, problem.state = hillClimbingSearch_S(problem, args.userInteraction, args.quiet)
             if problem.getObjValue(problem.state)==0:
                 print(f"[END] Global Optimum Reached i.e. hVal=0 in {steps} steps")
+                if args.quiet:
+                    problem.visualize(problem.state)
             else:
                 print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(problem.state)} in {steps} steps")
+                if args.quiet:
+                    problem.visualize(problem.state)
             print("[PLOT] Plotting the landscape explored...")
             problem.visualizeLandscape()
 
@@ -104,22 +111,30 @@ def main():
 
             print("[INFO] Tabu Search Chosen")
             print(f"[START] Running the algorithm for {args.queens}-Queens Problem")
-            steps, problem.state = tabuSearch(problem, args.tabuTenure, args.maxSteps, args.userInteraction)
+            steps, problem.state = tabuSearch(problem, args.tabuTenure, args.maxSteps, args.userInteraction, args.quiet)
             if problem.getObjValue(problem.state)==0:
                 print(f"[END] Global Optimum Reached i.e. hVal=0 in {steps} steps")
+                if args.quiet:
+                    problem.visualize(problem.state)
             else:
                 print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(problem.state)} in {steps} steps")
+                if args.quiet:
+                    problem.visualize(problem.state)
             print("[PLOT] Plotting the landscape explored...")
             problem.visualizeLandscape()
 
         elif args.dAlgo=='HC_FC':
             print("[INFO] First-Choice Hill Climbing Chosen")
             print(f"[START] Running the algorithm for {args.queens}-Queens Problem")
-            steps, problem.state = hillClimbingSearch_FC(problem, maxTrials=args.maxTrials, userInteraction=args.userInteraction)
+            steps, problem.state = hillClimbingSearch_FC(problem, args.maxTrials, args.userInteraction, args.quiet)
             if problem.getObjValue(problem.state)==0:
                 print(f"[END] Global Optimum Reached i.e. hVal=0 in {steps} steps")
+                if args.quiet:
+                    problem.visualize(problem.state)
             else:
                 print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(problem.state)} in {steps} steps")
+                if args.quiet:
+                    problem.visualize(problem.state)
             print("[PLOT] Plotting the landscape explored...")
             problem.visualizeLandscape()
 
@@ -129,9 +144,11 @@ def main():
 
             print("[INFO] Random-Restart Hill Climbing Chosen")
             print(f"[START] Running the algorithm for {args.queens}-Queens Problem")
-            steps, state = hillClimbingSearch_RR(problem, args.pRestart, args.maxSteps, args.userInteraction)
+            steps, state = hillClimbingSearch_RR(problem, args.pRestart, args.maxSteps, args.userInteraction, args.quiet)
             if problem.getObjValue(state)==0:
                 print(f"[END] Global Optimum Reached i.e. hVal=0 in {steps} steps")
+                if args.quiet:
+                    problem.visualize(problem.state)
             else:
                 print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(state)} in {steps} steps")
                 print("Best state yet: ")
@@ -145,9 +162,11 @@ def main():
             
             print("[INFO] Simulated Annealing Chosen")
             print(f"[START] Running the algorithm for {args.queens}-Queens Problem")
-            steps, state = simulatedAnnealing(problem, args.maxSteps, args.userInteraction)
+            steps, state = simulatedAnnealing(problem, args.maxSteps, args.userInteraction, args.quiet)
             if problem.getObjValue(state)==0:
                 print(f"[END] Global Optimum Reached i.e. hVal=0 in {steps} steps")
+                if args.quiet:
+                    problem.visualize(problem.state)
             else:
                 print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(state)} in {steps} steps")
                 print("Best state yet: ")
@@ -171,10 +190,10 @@ def main():
         optimizedWeights = gradDescent(problem, 
                                         maxIterations=args.maxIterations,
                                         stepSize=args.stepSize)
-        print("[PLOT] Plotting the result, post optimization...")
+        print("[PLOT] Plotting the result, post optimization along with loss values...")
         problem.visualize(optimizedWeights)
-        print("[PLOT] Plotting the loss values...")
-        problem.visualizeLoss()
+        # print("[PLOT] Plotting the loss values...")
+        # problem.visualizeLoss()
 
 if __name__=='__main__':
     main()

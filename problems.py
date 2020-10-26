@@ -158,21 +158,29 @@ class propertyProblem:
 
     def visualize(self, weights):
         # plot the data and plot the prediction
+        plt.subplot(1,2,1)
         plt.scatter([x for x,_ in self.listings], [y for _,y in self.listings])
-        plt.grid()
-        plt.xlabel("Property Sizes (in sq. kms)")
-        plt.ylabel("Property Costs (in million dollars)")
         x = np.linspace(0, max(x for x,_ in self.listings)+5,50)
         y = weights[0] + weights[1]*x
         plt.plot(x, y, label='Optimized weights')
-        print("Close the plot window to continue")
-        plt.show()
-    
-    def visualizeLoss(self):
-        # plt.scatter(list(range(len(self.losses)))[100:], self.losses[100:])
+        plt.grid()
+        plt.xlabel("Property Sizes (in sq. kms)")
+        plt.ylabel("Property Costs (in million dollars)")
+
+        plt.subplot(1,2,2)
         plt.plot(list(range(len(self.losses)))[100:], self.losses[100:])
         plt.grid()
         plt.xlabel("Number of Iterations")
         plt.ylabel("Loss Value")
+
         print("Close the plot window to continue")
         plt.show()
+    
+    # def visualizeLoss(self):
+    #     # plt.scatter(list(range(len(self.losses)))[100:], self.losses[100:])
+    #     plt.plot(list(range(len(self.losses)))[100:], self.losses[100:])
+    #     plt.grid()
+    #     plt.xlabel("Number of Iterations")
+    #     plt.ylabel("Loss Value")
+    #     print("Close the plot window to continue")
+    #     plt.show()

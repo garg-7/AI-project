@@ -11,7 +11,7 @@
 
 # ------- Deterministic Algorithms ------- #
 
-def hillClimbingSearch_S(problem, userInteraction):
+def hillClimbingSearch_S(problem, userInteraction, beQuiet):
     """
         `'Steepest Direction Hill Climbing'`
 
@@ -27,7 +27,8 @@ def hillClimbingSearch_S(problem, userInteraction):
     """
 
     currentState = problem.state
-    problem.visualize(currentState)
+    if not beQuiet:
+        problem.visualize(currentState)
 
     # for visualization
     problem.hVals.append(problem.getObjValue(currentState))
@@ -53,13 +54,13 @@ def hillClimbingSearch_S(problem, userInteraction):
 
             # for visualization later on
             problem.hVals.append(problem.getObjValue(currentState))
-            
-            if userInteraction:
-                input("Press enter to continue ")
             steps+=1
-            problem.visualize(currentState)
+            if not beQuiet:
+                if userInteraction:
+                    input("Press enter to continue ")
+                problem.visualize(currentState)
 
-def tabuSearch(problem, tabuSize, maxSteps, userInteraction):
+def tabuSearch(problem, tabuSize, maxSteps, userInteraction, beQuiet):
     """
         `'Tabu Search'`
 
@@ -79,11 +80,12 @@ def tabuSearch(problem, tabuSize, maxSteps, userInteraction):
     """
 
     currentState = problem.state
-    problem.visualize(currentState)
+    if not beQuiet:
+        problem.visualize(currentState)
     tabuList = list()
     tabuList.append(currentState)
     steps = 0
-    bestYet = None
+    bestYet = currentState
     # for visualization
     problem.hVals.append(problem.getObjValue(currentState))
 
@@ -97,7 +99,7 @@ def tabuSearch(problem, tabuSize, maxSteps, userInteraction):
         while runningBest in tabuList:
             i+=1
             if i==len(neighbours):
-                return steps, currentState
+                return steps, bestYet
             runningBest = neighbours[i]
 
         # reaching this point means there is atleast 
@@ -118,19 +120,24 @@ def tabuSearch(problem, tabuSize, maxSteps, userInteraction):
         # make the jump to the better neighbour
         currentState = runningBest
         
+        currentVal = problem.getObjValue(currentState)
+        bestYetVal = problem.getObjValue(bestYet)
+        if problem.isBetter(currentVal, bestYetVal):
+            bestYet = currentState
+
         # for visualization later on
         problem.hVals.append(problem.getObjValue(currentState))
-        
-        if userInteraction:
-            input("Press enter to continue ")
         steps+=1
-        problem.visualize(currentState)
-    return steps, currentState
+        if not beQuiet:
+            if userInteraction:
+                input("Press enter to continue ")
+            problem.visualize(currentState)
+    return steps, bestYet
 
 
 # ------- Stochastic Algorithms ------- #
 
-def hillClimbingSearch_FC(problem, maxTrials, userInteraction):
+def hillClimbingSearch_FC(problem, maxTrials, userInteraction, beQuiet):
     """
         `'First-Choice Hill Climbing'`
 
@@ -149,7 +156,8 @@ def hillClimbingSearch_FC(problem, maxTrials, userInteraction):
 
 
     currentState = problem.state
-    problem.visualize(currentState)
+    if not beQuiet:
+        problem.visualize(currentState)
     steps = 0
 
     # for visualization
@@ -169,8 +177,6 @@ def hillClimbingSearch_FC(problem, maxTrials, userInteraction):
                 break
             trials+=1
         if betterState:            
-            if userInteraction:
-                input("Press enter to continue ")
             # jump to neighbour better than current state
             currentState = betterState
             
@@ -178,13 +184,16 @@ def hillClimbingSearch_FC(problem, maxTrials, userInteraction):
             problem.hVals.append(problem.getObjValue(currentState))
             
             steps+=1
-            problem.visualize(currentState)
+            if not beQuiet:
+                if userInteraction:
+                    input("Press enter to continue ")
+                problem.visualize(currentState)
         else:
             print(f"{maxTrials} trials for random neighbours exhausted. No better neighbour found.")
             return steps, currentState
 
 
-def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
+def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction, beQuiet):
     """
         `'Random-Restart Hill Climbing'`
 
@@ -205,7 +214,8 @@ def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
 
     import random
     currentState = problem.state
-    problem.visualize(currentState)
+    if not beQuiet:
+        problem.visualize(currentState)
     steps = 0
     restarts=0
     bestYet = currentState
@@ -234,15 +244,16 @@ def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
                     bestYet = runningBest
             else:
                 # jump to best neighbour
-                if userInteraction:
-                    input("Press enter to continue ")
                 currentState = runningBest
 
                 # for visualization later on
                 problem.hVals.append(problem.getObjValue(currentState))
                 
-                print("Greedy step taken.")
-                problem.visualize(currentState)
+                if not beQuiet:
+                    print("Greedy step taken.")
+                    if userInteraction:
+                        input("Press enter to continue ")
+                    problem.visualize(currentState)
                 currentVal = problem.getObjValue(currentState)
                 bestYetVal = problem.getObjValue(bestYet)
                 if problem.isBetter(currentVal, bestYetVal):
@@ -250,15 +261,15 @@ def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
                 steps+=1
         else:
             # do a random restart
-            if userInteraction:
-                input("Press enter to continue ")
             currentState = problem.getRandomState()
             
             # for visualization later on
             problem.hVals.append(problem.getObjValue(currentState))
-            
-            print("Random restart done.")
-            problem.visualize(currentState)
+            if not beQuiet:
+                if userInteraction:
+                    input("Press enter to continue ")
+                print("Random restart done.")
+                problem.visualize(currentState)
             
             currentVal = problem.getObjValue(currentState)
             bestYetVal = problem.getObjValue(bestYet)
@@ -273,11 +284,11 @@ def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
 
 def tempSchedule(steps, maxSteps):
     ''' Returns the temperature depending on how many steps have been taken'''
-    temperature = 100*min(1, 1 - float(steps)/maxSteps)
+    temperature = max(0.01, min(1, 1 - float(steps)/maxSteps))
     return temperature
 
 
-def simulatedAnnealing(problem, maxSteps, userInteraction):
+def simulatedAnnealing(problem, maxSteps, userInteraction, beQuiet):
     """
         `'Simulated Annealing'`
 
@@ -315,11 +326,12 @@ def simulatedAnnealing(problem, maxSteps, userInteraction):
                         problem.getObjValue(currentState)
         if changeInObj > 0:
             # if the neighbour is better, jump
-            if userInteraction:
-                input("Press enter to continue ")
             currentState = neighbour
-            print("Greedy step taken.")
-            problem.visualize(currentState)
+            if not beQuiet:
+                if userInteraction:
+                    input("Press enter to continue ")
+                print("Greedy step taken.")
+                problem.visualize(currentState)
             steps+=1
 
             currentVal = problem.getObjValue(currentState)
@@ -332,12 +344,14 @@ def simulatedAnnealing(problem, maxSteps, userInteraction):
 
         else:
             # if the neighbour is worse, jump with some probability
-            if exp(changeInObj/temperature) >= random.random():
-                if userInteraction:
-                    input("Press enter to continue ")
+            if random.random() < exp(-1*changeInObj/temperature):
+                
                 currentState = neighbour
-                print("Step in a worse direction taken.")
-                problem.visualize(currentState)
+                if not beQuiet:
+                    if userInteraction:
+                        input("Press enter to continue ")
+                    print("Step in a worse direction taken.")
+                    problem.visualize(currentState)
                 steps+=1
 
                 currentVal = problem.getObjValue(currentState)
