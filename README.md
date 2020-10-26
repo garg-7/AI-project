@@ -40,6 +40,12 @@ _Note that you need to provide a correct initialization. Any incomplete initiali
 python main.py -d discrete -q 4 -u
 ```  
 _This would run steepest hill climbing on a randomly-initialized 4-queens problem where you need to press enter before it takes a step._  
+
+- You can turn on **quiet mode** by using the flag `-qt`. This way, no intermediate states will be shown and only the final result and the optimization journey will be displayed.  
+```bash
+python main.py -d discrete -q 4 -qt
+```  
+NOTE: The user interaction flag is useless if the -qt flag is used.  
   
 In all the above cases the algorithm wasn't specified and by default steepest hill climbing was run. To run other algorithms you need to **specify the algorithm and OPTIONAL parameters** for it (if any) with the help of the flags mentioned below.  
 _(To keep it simple, I haven't mentioned specification of number of queens or manual user initialization but just keep in mind that you could do that for any of the algorithms below.)_  
