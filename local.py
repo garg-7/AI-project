@@ -210,10 +210,9 @@ def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
     problem.hVals.append(problem.getObjValue(currentState))
 
     while steps<maxSteps:
-        currentObjVal = problem.getObjValue(currentState)
         if problem.isGlobalOptimum(currentState):
             print(f"\nTotal random restarts done: {restarts}.")
-            return steps, currentState
+            return steps, bestYet
         if random.random()>=p:
             # make a greedy step
             neighbours = problem.getNeighbours(currentState)
@@ -240,6 +239,10 @@ def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
                 
                 print("Greedy step taken.")
                 problem.visualize(currentState)
+                currentVal = problem.getObjValue(currentState)
+                bestYetVal = problem.getObjValue(bestYet)
+                if problem.isBetter(currentVal, bestYetVal):
+                    bestYet = currentState
                 steps+=1
         else:
             # do a random restart
@@ -252,6 +255,12 @@ def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
             
             print("Random restart done.")
             problem.visualize(currentState)
+            
+            currentVal = problem.getObjValue(currentState)
+            bestYetVal = problem.getObjValue(bestYet)
+            if problem.isBetter(currentVal, bestYetVal):
+                bestYet = currentState
+            
             restarts+=1
             steps+=1
     # after running out of steps, return the best yet state
@@ -261,7 +270,6 @@ def hillClimbingSearch_RR(problem, p, maxSteps, userInteraction):
 def tempSchedule(steps, maxSteps):
     ''' Returns the temperature depending on how many steps have been taken'''
     temperature = 100*min(1, 1 - float(steps)/maxSteps)
-
     return temperature
 
 
@@ -287,12 +295,15 @@ def simulatedAnnealing(problem, maxSteps, userInteraction):
 
     currentState = problem.state
     steps = 0
-
+    bestYet = currentState
     # for visualization
     problem.hVals.append(problem.getObjValue(currentState))
 
     while steps<maxSteps:
+        if problem.isGlobalOptimum(currentState):
+            return steps, bestYet
         temperature = tempSchedule(steps, maxSteps)
+        # print(temperature)
         if temperature == 0:
             return currentState
         neighbour = problem.getRandomNeighbour(currentState)
@@ -303,7 +314,14 @@ def simulatedAnnealing(problem, maxSteps, userInteraction):
             if userInteraction:
                 input("Press enter to continue ")
             currentState = neighbour
+            print("Greedy step taken.")
+            problem.visualize(currentState)
             steps+=1
+
+            currentVal = problem.getObjValue(currentState)
+            bestYetVal = problem.getObjValue(bestYet)
+            if problem.isBetter(currentVal, bestYetVal):
+                bestYet = currentState
 
             # for visualization later on
             problem.hVals.append(problem.getObjValue(currentState))
@@ -314,11 +332,18 @@ def simulatedAnnealing(problem, maxSteps, userInteraction):
                 if userInteraction:
                     input("Press enter to continue ")
                 currentState = neighbour
+                print("Step in a worse direction taken.")
+                problem.visualize(currentState)
                 steps+=1
+
+                currentVal = problem.getObjValue(currentState)
+                bestYetVal = problem.getObjValue(bestYet)
+                if problem.isBetter(currentVal, bestYetVal):
+                    bestYet = currentState
 
                 # for visualization later on
                 problem.hVals.append(problem.getObjValue(currentState))
-    return currentState
+    return steps, bestYet
 
 
 
@@ -388,7 +413,7 @@ def gradDescent(problem, maxIterations, stepSize):
             stepSize /= 10
             print("Step size factor was reduced to 1/10th")
 
-        print(f"Iter:[{i}/{maxIterations}]\tLoss: {loss}")
+        print(f"Iter:[{i}/{maxIterations}]\t\tLoss: {loss}")
 
     return bestWeights
 

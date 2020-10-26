@@ -129,13 +129,13 @@ def main():
 
             print("[INFO] Random-Restart Hill Climbing Chosen")
             print(f"[START] Running the algorithm for {args.queens}-Queens Problem")
-            steps, problem.state = hillClimbingSearch_RR(problem, args.pRestart, args.maxSteps, args.userInteraction)
-            if problem.getObjValue(problem.state)==0:
+            steps, state = hillClimbingSearch_RR(problem, args.pRestart, args.maxSteps, args.userInteraction)
+            if problem.getObjValue(state)==0:
                 print(f"[END] Global Optimum Reached i.e. hVal=0 in {steps} steps")
             else:
-                print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(problem.state)} in {steps} steps")
+                print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(state)} in {steps} steps")
                 print("Best state yet: ")
-                problem.visualize(problem.state)
+                problem.visualize(state)
             print("[PLOT] Plotting the landscape explored...")
             problem.visualizeLandscape()
 
@@ -145,13 +145,13 @@ def main():
             
             print("[INFO] Simulated Annealing Chosen")
             print(f"[START] Running the algorithm for {args.queens}-Queens Problem")
-            steps, problem.state = simulatedAnnealing(problem, args.maxSteps, args.userInteraction)
-            if problem.getObjValue(problem.state)==0:
+            steps, state = simulatedAnnealing(problem, args.maxSteps, args.userInteraction)
+            if problem.getObjValue(state)==0:
                 print(f"[END] Global Optimum Reached i.e. hVal=0 in {steps} steps")
             else:
-                print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(problem.state)} in {steps} steps")
+                print(f"[END] Local Optimum Reached with hVal={problem.getObjValue(state)} in {steps} steps")
                 print("Best state yet: ")
-                problem.visualize(problem.state)
+                problem.visualize(state)
             print("[PLOT] Plotting the landscape explored...")
             problem.visualizeLandscape()
 
