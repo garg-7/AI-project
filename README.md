@@ -61,7 +61,9 @@ _This will run random-restart hill climbing with the probability of random resta
 A stochastic algorithm. To run it, one can optionally specify 1 paramter -  
 `-s` :the max number of steps to run the search for (default: 1000)  
 
-`python main.py -d discrete -da SA -s 300`  
+```bash
+python main.py -d discrete -da SA -s 300
+```  
 _This will run simulated annealing. The max number of steps taken if optimum isn't found is 300._  
 NOTE: The schedule that has been considered here, is:  
 ``temperature = 100*min(1, 1-stepsDone/maxSteps)``
